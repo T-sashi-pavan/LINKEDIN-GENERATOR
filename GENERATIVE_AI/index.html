@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkedIn Description Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0077b5;
+            --secondary-color: #00a0dc;
+            --accent-color: #ff6b6b;
+            --background-color: #f5f7fa;
+            --card-color: #ffffff;
+            --text-color: #2d3436;
+            --light-text: #666666;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .bubbles {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bubble {
+            position: absolute;
+            background: rgba(0, 119, 181, 0.1);
+            border-radius: 50%;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            text-align: center;
+            padding: 60px 0;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 20px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 1s ease;
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            opacity: 0.3;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.8rem;
+            font-weight: 700;
+            letter-spacing: -1px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 1;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            margin-top: 15px;
+            font-weight: 300;
+            position: relative;
+            z-index: 1;
+        }
+
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 65vh;
+            min-height: 500px;
+            background-color: var(--card-color);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+
+        .chat-container:hover {
+            transform: translateY(-5px);
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+        }
+
+        .chat-header img {
+            width: 40px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+            animation: pulse 2s infinite;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 25px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            background: repeating-linear-gradient(
+                45deg,
+                rgba(245, 247, 250, 0.05),
+                rgba(245, 247, 250, 0.05) 10px,
+                rgba(255, 255, 255, 0.1) 10px,
+                rgba(255, 255, 255, 0.1) 20px
+            );
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 15px 20px;
+            border-radius: 25px;
+            animation: fadeIn 0.5s ease;
+            position: relative;
+            transition: transform 0.3s ease;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .message:hover {
+            transform: scale(1.02);
+        }
+
+        .user-message {
+            align-self: flex-end;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 25px 25px 5px 25px;
+            box-shadow: 0 5px 15px rgba(0, 119, 181, 0.3);
+        }
+
+        .bot-message {
+            align-self: flex-start;
+            background: linear-gradient(135deg, #ffffff, #f8f9fa);
+            color: var(--text-color);
+            border-radius: 25px 25px 25px 5px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .input-area {
+            display: flex;
+            padding: 20px;
+            border-top: 2px solid rgba(0,0,0,0.05);
+            background-color: var(--card-color);
+            gap: 15px;
+        }
+
+        #user-input {
+            flex: 1;
+            padding: 15px 25px;
+            border: 2px solid rgba(0, 119, 181, 0.1);
+            border-radius: 30px;
+            font-size: 1.1rem;
+            outline: none;
+            transition: all 0.3s ease;
+            background: rgba(245, 247, 250, 0.5);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        #user-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 15px rgba(0, 119, 181, 0.2);
+        }
+
+        #send-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 0 30px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 119, 181, 0.3);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        #send-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 119, 181, 0.4);
+        }
+
+        .result-container {
+            margin-top: 40px;
+            background-color: var(--card-color);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: none;
+            animation: slideUp 0.5s ease;
+        }
+
+        .result-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+            font-weight: 600;
+            font-size: 1.4rem;
+        }
+
+        .result-content {
+            padding: 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .image-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f0f4f8;
+            min-height: 300px;
+        }
+
+        .image-container:hover {
+            transform: scale(1.02);
+        }
+
+        .generated-image {
+            max-width: 100%;
+            max-height: 400px;
+            object-fit: contain;
+            display: block;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .generated-description {
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+            padding: 30px;
+            border-radius: 15px;
+            border-left: 6px solid var(--primary-color);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            font-size: 1.1rem;
+            line-height: 1.8;
+            position: relative;
+            overflow: auto;
+            max-height: 400px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            justify-content: flex-end;
+        }
+
+        .copy-btn, #download-btn {
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Poppins', sans-serif;
+            border: none;
+            cursor: pointer;
+        }
+
+        .copy-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+
+        #download-btn {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .copy-btn:hover, #download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            header {
+                padding: 40px 20px;
+                border-radius: 15px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .subtitle {
+                font-size: 1.1rem;
+            }
+
+            .chat-container {
+                height: 60vh;
+            }
+
+            .result-content {
+                grid-template-columns: 1fr;
+                padding: 20px;
+                gap: 20px;
+            }
+
+            .image-container {
+                min-height: 250px;
+            }
+
+            .generated-image {
+                max-height: 300px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .copy-btn, #download-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #user-input {
+                padding: 12px 20px;
+                font-size: 1rem;
+            }
+
+            #send-btn {
+                padding: 0 20px;
+                font-size: 1rem;
+            }
+
+            .generated-image {
+                max-height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bubbles" id="bubbles"></div>
+    
+    <div class="container">
+        <header>
+            <h1>LinkedIn Description Generator</h1>
+            <p class="subtitle">Create professional LinkedIn posts for your achievements</p>
+        </header>
+        
+        <div class="chat-container">
+            <div class="chat-header">
+                <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" alt="LinkedIn Logo">
+                <span>LinkedIn Bot</span>
+            </div>
+            
+            <div class="chat-messages" id="chat-messages">
+                <div class="message bot-message">
+                    Hello! I can help you create professional LinkedIn descriptions for your projects, certifications, internships, and achievements. Just tell me what you'd like to share!
+                </div>
+                
+            </div>
+            
+            <div class="input-area">
+                <input type="text" id="user-input" placeholder="Type your achievement here...">
+                <button id="send-btn">Send</button>
+            </div>
+        </div>
+        
+        <div class="result-container" id="result-container">
+            <div class="result-header">
+                Generated LinkedIn Post
+            </div>
+            <div class="result-content">
+                <div class="image-container">
+                    <img id="generated-image" class="generated-image" src="" alt="Generated Image">
+                </div>
+                <div>
+                    <div id="generated-description" class="generated-description"></div>
+                    <div class="button-group">
+                        <button id="download-btn">Download Image</button>
+                        <button class="copy-btn" id="copy-btn">Copy Description</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Database of prompts and responses
+        const responses = {
+            "project": {
+    "ecommerce": {
+        "description": "🚀 Exciting News! I've just completed my eCommerce project! 🛍️\n\nOver the past few weeks, I've been working diligently to build a fully functional eCommerce platform from scratch. This project involved:\n\n- Developing responsive product pages\n- Implementing secure payment gateways\n- Creating an intuitive user dashboard\n- Optimizing for mobile devices\n\nThrough this experience, I've deepened my understanding of web development, user experience design, and database management. It was challenging but incredibly rewarding to see everything come together!\n\n#eCommerce #WebDevelopment #ProjectShowcase #LearningJourney",
+        "image": "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "ai chatbot assistant": {
+        "description": "🤖 AI Chatbot Assistant Project Completed! I'm thrilled to share my conversational AI project that can understand and respond to natural language queries.\n\nKey accomplishments:\n- Implemented NLP using TensorFlow/PyTorch\n- Designed intuitive conversation flows\n- Integrated with multiple backend APIs\n- Achieved 85% accuracy in intent recognition\n\nThis project helped me master neural networks, dialogue management, and deploying AI models. The most rewarding part was seeing real users interact naturally with the bot!\n\n#ArtificialIntelligence #Chatbot #NLP #AIDevelopment",
+        "image": "https://images.unsplash.com/photo-1655720828013-f05510a872a3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "resume builder web app": {
+        "description": "📄 Resume Builder Web App Launched! Just completed a dynamic resume generator that helps users create professional CVs in minutes.\n\nFeatures include:\n- Drag-and-drop template editor\n- Real-time PDF preview\n- ATS-friendly formatting\n- Multi-export options (PDF/DOCX/JSON)\n\nBuilt with React, Node.js, and PDFKit. Learned valuable lessons about document generation and user experience optimization for professional tools.\n\n#WebDevelopment #ReactJS #CareerTools #PortfolioProject",
+        "image": "https://images.unsplash.com/photo-1507679799987-c73779587ccf?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "text-to-image generator": {
+        "description": "🎨 AI Art Generator Project! Created a text-to-image synthesis tool using Stable Diffusion/DALL-E models.\n\nTechnical highlights:\n- Fine-tuned diffusion models\n- Implemented prompt engineering\n- Optimized GPU inference\n- Developed creative control features\n\nFascinating to explore how AI interprets language visually. The project deepened my understanding of generative AI and creative computing.\n\n#GenerativeAI #MachineLearning #CreativeTech #DeepLearning",
+        "image": "https://images.unsplash.com/photo-1644442700031-9a9d2a8a3b4d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "edtech lms platform": {
+        "description": "📚 EdTech LMS Platform Developed! Built a comprehensive learning management system for online education.\n\nKey components:\n- Course authoring tools\n- Interactive quizzes\n- Progress tracking\n- Video conferencing integration\n\nThis full-stack project used MERN stack and taught me about scalable educational architectures. Particularly proud of the accessible design that supports diverse learners.\n\n#EdTech #WebDevelopment #OnlineLearning #FullStack",
+        "image": "https://images.unsplash.com/photo-1581726707445-75cbe4efc586?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "smart expense tracker": {
+        "description": "💰 Smart Expense Tracker App Completed! Developed a personal finance tool with AI-powered insights.\n\nInnovative features:\n- Receipt scanning OCR\n- Spending pattern analysis\n- Budget forecasting\n- Multi-currency support\n\nBuilt with Flutter for cross-platform use. Learned about financial data visualization and privacy-first design principles.\n\n#FinTech #MobileDevelopment #Flutter #PersonalFinance",
+        "image": "https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "online voting system": {
+        "description": "🗳️ Secure Online Voting System Project! Created a blockchain-based voting platform for transparent elections.\n\nSecurity features:\n- End-to-end encryption\n- Voter anonymity\n- Immutable ledger\n- Biometric verification\n\nChallenging but crucial work at the intersection of democracy and technology. Gained deep knowledge about cryptographic voting protocols.\n\n#Blockchain #CyberSecurity #CivicTech #FullStack",
+        "image": "https://images.unsplash.com/photo-1551524559-8af4e6624178?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "portfolio website with blog": {
+        "description": "✨ New Portfolio Website Live! Designed and developed my personal portfolio with integrated blog functionality.\n\nTechnical details:\n- Jamstack architecture\n- Headless CMS integration\n- Dark/light mode\n- Performance optimization (95+ Lighthouse)\n\nMore than just a showcase, this project represents my approach to clean, accessible web design. The blog will share my ongoing learning journey.\n\n#WebDesign #Portfolio #Jamstack #Frontend",
+        "image": "https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "real-time chat application": {
+        "description": "💬 Real-Time Chat App Deployed! Built a scalable messaging platform with WebSockets.\n\nFeatures include:\n- Instant message delivery\n- Typing indicators\n- Message history\n- End-to-end encryption\n\nImplemented using Node.js, Socket.io, and React. Learned valuable lessons about real-time system architecture and state synchronization.\n\n#WebSockets #RealTimeTech #FullStack #WebDevelopment",
+        "image": "https://images.unsplash.com/photo-1587560699334-bea93391dcef?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "online code editor": {
+        "description": "👨‍💻 CodePen-like Editor Project! Created an online IDE with live preview functionality.\n\nTechnical highlights:\n- Monaco editor integration\n- Multi-language support\n- Collaborative editing\n- Sandboxed execution\n\nThis project deepened my understanding of compiler theory, browser APIs, and developer tooling. Fun challenge to build a tool for building tools!\n\n#DeveloperTools #WebDevelopment #JavaScript #Programming",
+        "image": "https://images.unsplash.com/photo-1617791160536-598cf32026fb?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "voice-controlled smart home ui": {
+        "description": "🎤 Voice-Controlled Smart Home UI! Developed a natural language interface for IoT devices.\n\nInnovations include:\n- Custom wake word detection\n- Device control via speech\n- Context-aware commands\n- Multi-user recognition\n\nIntegrated with popular smart home platforms. Fascinating work at the intersection of NLP and embedded systems.\n\n#IoT #VoiceInterface #HomeAutomation #EmbeddedSystems",
+        "image": "https://images.unsplash.com/photo-1558002038-1055907df827?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "fitness tracker app": {
+        "description": "🏋️‍♂️ Fitness Tracker App Launched! Created a health monitoring platform with wearable integration.\n\nKey features:\n- Activity recognition\n- Workout planning\n- Nutrition logging\n- Health data visualization\n\nBuilt with React Native for cross-platform use. Learned about sensor APIs, health data privacy, and motivational UX design.\n\n#HealthTech #MobileDevelopment #ReactNative #UXDesign",
+        "image": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "job posting portal": {
+        "description": "💼 Job Portal Project Completed! Built a full-stack recruitment platform connecting employers and candidates.\n\nNotable functionality:\n- AI-powered matching\n- Video interviewing\n- Skills assessment\n- Analytics dashboard\n\nDeveloped using microservices architecture. Gained valuable experience in building complex, data-intensive web applications.\n\n#HRTech #WebDevelopment #FullStack #Recruitment",
+        "image": "https://images.unsplash.com/photo-1521791136064-7986c2920216?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "weather forecast dashboard": {
+        "description": "⛅ Weather Forecast Dashboard! Created a real-time meteorological visualization tool.\n\nTechnical aspects:\n- Multiple API integrations\n- Predictive modeling\n- Interactive maps\n- Alert systems\n\nBuilt with Python backend and React frontend. Challenging but rewarding work with geospatial data and real-time updates.\n\n#DataVisualization #WebDevelopment #Meteorology #APIs",
+        "image": "https://images.unsplash.com/photo-1605722243979-fe0be8158232?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "crypto price tracker": {
+        "description": "₿ Crypto Tracker Project! Developed a real-time cryptocurrency monitoring platform.\n\nFeatures include:\n- 1000+ coin tracking\n- Portfolio management\n- Price alerts\n- Historical analysis\n\nImplemented with WebSocket connections to multiple exchanges. Learned about financial APIs, Web Workers for heavy computation, and secure authentication.\n\n#Blockchain #FinTech #WebDevelopment #Cryptocurrency",
+        "image": "https://images.unsplash.com/photo-1621761191319-c6fb62004040?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "recipe recommendation system": {
+        "description": "🍳 AI Recipe Recommender! Built a personalized cooking assistant that suggests meals based on dietary needs.\n\nInnovations:\n- Ingredient analysis\n- Nutritional balancing\n- Personal taste profiles\n- Meal planning\n\nUsed NLP for recipe parsing and collaborative filtering for recommendations. Delicious intersection of AI and culinary arts!\n\n#MachineLearning #FoodTech #NLP #RecommendationSystems",
+        "image": "https://images.unsplash.com/photo-1547592180-85f173990554?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "ai notes summarizer": {
+        "description": "📝 AI Notes Summarizer! Created a tool that automatically condenses long documents into key points.\n\nTechnical achievements:\n- Transformer model fine-tuning\n- Multi-document analysis\n- Context-aware summarization\n- Export to multiple formats\n\nThis project advanced my NLP skills and understanding of knowledge distillation techniques.\n\n#ArtificialIntelligence #NLP #ProductivityTools #MachineLearning",
+        "image": "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "facial recognition login": {
+        "description": "👤 Facial Recognition Auth System! Developed a secure biometric login solution.\n\nKey components:\n- Live detection\n- Anti-spoofing\n- Encryption\n- Cross-platform SDK\n\nBuilt with Python, OpenCV, and TensorFlow. Challenging work at the intersection of computer vision and cybersecurity.\n\n#ComputerVision #CyberSecurity #MachineLearning #Biometrics",
+        "image": "https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "virtual whiteboard": {
+        "description": "🖍️ Virtual Whiteboard Project! Created a real-time collaborative drawing space for teams.\n\nFeatures include:\n- Multi-user synchronization\n- Version history\n- Export to multiple formats\n- API for integrations\n\nImplemented using Canvas API and WebSockets. Learned about conflict resolution in collaborative applications and rendering optimization.\n\n#CollaborationTools #WebDevelopment #RealTimeTech #SaaS",
+        "image": "https://images.unsplash.com/photo-1607706189992-eae578626c86?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "crowdfunding platform": {
+        "description": "🌱 Crowdfunding Platform Launched! Built a Kickstarter-style platform for creative projects.\n\nKey functionality:\n- Campaign management\n- Payment processing\n- Social sharing\n- Analytics dashboard\n\nFull-stack development with emphasis on trust and safety features. Valuable experience in building financial platforms.\n\n#FinTech #WebDevelopment #Startup #Entrepreneurship",
+        "image": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "iot smart irrigation": {
+        "description": "💧 IoT Smart Irrigation System! Developed a water-efficient gardening solution using sensors and automation.\n\nComponents:\n- Soil moisture monitoring\n- Weather integration\n- Valve control\n- Mobile alerts\n\nBuilt with Raspberry Pi and LoRaWAN. Rewarding project combining hardware and software for environmental benefit.\n\n#IoT #EmbeddedSystems #Sustainability #SmartAgriculture",
+        "image": "https://images.unsplash.com/photo-1586771107445-d3ca888129ce?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "default": {
+        "description": "💻 Project Completed! I'm excited to share that I've finished working on my [project type] project!\n\nThis project allowed me to apply my skills in [relevant skills] to create [brief description of project]. Some highlights:\n\n- [Key feature 1]\n- [Key feature 2]\n- [Key challenge overcome]\n\nWorking on this project has been an incredible learning experience that helped me grow both technically and professionally. I'm proud of what I've accomplished and excited to apply these lessons to future projects!\n\n#ProjectShowcase #TechProjects #LearningAndGrowing #ProfessionalDevelopment",
+        "image": "https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    }
+},
+           "certification": {
+    "flutter": {
+        "description": "🎓 Certified Flutter Developer! I'm proud to announce that I've successfully completed my Flutter certification! 🚀\n\nThis comprehensive program covered:\n\n- Flutter framework fundamentals\n- Dart programming language\n- State management solutions\n- Building cross-platform apps\n- API integration\n\nThrough hands-on projects and rigorous testing, I've gained valuable skills in mobile app development that I'm excited to apply in real-world scenarios. The journey was challenging but incredibly rewarding!\n\n#Flutter #MobileDevelopment #CertificationAchieved #ContinuousLearning",
+        "image": "https://images.unsplash.com/photo-1633356122544-f134324a6cee?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "python for everybody": {
+        "description": "🐍 Python for Everybody Certification Completed! I'm excited to share that I've earned this comprehensive Python programming certification from Coursera!\n\nKey skills acquired:\n- Core Python programming concepts\n- Data structures and algorithms\n- Web scraping and APIs\n- Database operations with SQL\n\nThis certification has strengthened my foundation in one of the world's most versatile programming languages. The practical projects helped me develop real-world problem-solving skills using Python.\n\n#Python #Programming #Coursera #CodingSkills",
+        "image": "https://images.unsplash.com/photo-1526379095098-d400fd0bf935?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "javascript algorithms": {
+        "description": "🧠 JavaScript Algorithms Certification Earned! Proud to complete freeCodeCamp's rigorous JavaScript Algorithms and Data Structures certification.\n\nMastered:\n- Advanced array methods\n- Object-oriented programming\n- Functional programming\n- Algorithm scripting\n- Data structure implementation\n\n300+ hours of coding challenges have significantly leveled up my problem-solving skills. The certification projects were particularly valuable for understanding efficient code implementation.\n\n#JavaScript #Algorithms #freeCodeCamp #Programming",
+        "image": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "responsive web design": {
+        "description": "🌐 Responsive Web Design Certified! Successfully completed this certification focusing on modern, accessible web development.\n\nKey competencies:\n- HTML5 semantic markup\n- CSS Flexbox/Grid\n- Responsive design principles\n- Accessibility standards\n- Visual design theory\n\nBuilt multiple projects demonstrating mobile-first development approach. This certification has enhanced my ability to create websites that work beautifully across all devices.\n\n#WebDesign #Frontend #ResponsiveDesign #freeCodeCamp",
+        "image": "https://images.unsplash.com/photo-1547658719-da2b51169166?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "full stack web development": {
+        "description": "💻 Meta Full Stack Developer Certified! Thrilled to complete this comprehensive program covering both frontend and backend technologies.\n\nTechnical stack mastered:\n- React.js framework\n- Node.js and Express\n- RESTful API development\n- Database management\n- DevOps fundamentals\n\nThe capstone project challenged me to build a complete web application from scratch, integrating all these technologies. Invaluable experience for modern web development!\n\n#FullStack #WebDevelopment #Meta #Coding",
+        "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "android developer": {
+        "description": "📱 Google Android Developer Certified! Proud to earn this prestigious certification demonstrating professional Android development skills.\n\nKey competencies:\n- Kotlin programming\n- Android architecture components\n- UI/UX best practices\n- App performance optimization\n- Google Play Store requirements\n\nThrough rigorous exams and practical assessments, I've proven my ability to build production-quality Android applications. Excited to apply these skills to create impactful mobile experiences!\n\n#Android #MobileDevelopment #GoogleCertified #Kotlin",
+        "image": "https://images.unsplash.com/photo-1607252650355-f7fd0460ccdb?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "ios development swift": {
+        "description": "🍎 iOS Developer with Swift Certified! Completed Apple's comprehensive training in building iOS applications.\n\nSkills validated:\n- Swift programming language\n- UIKit and SwiftUI frameworks\n- Core Data management\n- App Store submission process\n- Apple Human Interface Guidelines\n\nDeveloped multiple apps during the certification process, gaining hands-on experience with Apple's development ecosystem. This certification represents my commitment to professional mobile development standards.\n\n#iOS #Swift #AppleDeveloper #MobileApps",
+        "image": "https://images.unsplash.com/photo-1617474019977-161a1f85e9a1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "aws cloud practitioner": {
+        "description": "☁️ AWS Cloud Practitioner Certified! Earned this foundational certification demonstrating cloud computing knowledge with Amazon Web Services.\n\nKey concepts mastered:\n- AWS global infrastructure\n- Core services (EC2, S3, RDS)\n- Cloud security best practices\n- Pricing models and billing\n- Cloud architecture principles\n\nThis certification has given me a solid foundation in cloud technologies and prepared me for more advanced AWS certifications. Excited to apply this knowledge to cloud-based solutions!\n\n#AWS #CloudComputing #AmazonWebServices #CloudCertified",
+        "image": "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "azure fundamentals": {
+        "description": "🔷 Microsoft Azure Fundamentals Certified! Successfully completed this entry-level certification for Microsoft's cloud platform.\n\nAreas covered:\n- Cloud concepts and Azure services\n- Security, privacy, compliance\n- Azure pricing and support\n- Core solutions and management tools\n\nGained valuable understanding of Microsoft's cloud ecosystem and how it compares to other platforms. This certification is my first step toward becoming an Azure cloud expert!\n\n#Azure #Microsoft #CloudComputing #Certification",
+        "image": "https://images.unsplash.com/photo-1633352616337-3fe7d7b6f4cb?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "google cloud engineer": {
+        "description": "☁️ Google Cloud Associate Engineer Certified! Proud to achieve this professional certification in GCP technologies.\n\nValidated skills include:\n- Setting up cloud solutions environments\n- Planning and configuring compute resources\n- Managing storage systems\n- Implementing networking\n- Deploying applications\n\nThe hands-on labs were particularly valuable for understanding real-world cloud implementation challenges. Ready to architect solutions on Google's powerful cloud platform!\n\n#GoogleCloud #GCP #CloudEngineering #DevOps",
+        "image": "https://images.unsplash.com/photo-1611162616475-46592b5a8c92?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "docker certified": {
+        "description": "🐳 Docker Certified Associate! Earned this industry-recognized certification in containerization technologies.\n\nProven competencies:\n- Container orchestration\n- Image creation and management\n- Networking and storage\n- Security best practices\n- Docker Enterprise Edition\n\nMastered the complete Docker ecosystem through hands-on labs and rigorous testing. This certification validates my ability to build, ship, and run distributed applications using containers.\n\n#Docker #Containers #DevOps #CloudNative",
+        "image": "https://images.unsplash.com/photo-1639762681057-408e52192e55?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "kubernetes administrator": {
+        "description": "⚓ Certified Kubernetes Administrator (CKA)! Achieved this challenging certification demonstrating real-world Kubernetes skills.\n\nKey abilities validated:\n- Cluster installation and configuration\n- Application lifecycle management\n- Networking and security\n- Storage orchestration\n- Troubleshooting\n\nThe performance-based exam tested my ability to solve actual problems in a live environment. This certification represents deep, practical knowledge of container orchestration.\n\n#Kubernetes #CKA #DevOps #CloudComputing",
+        "image": "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "terraform associate": {
+        "description": "🏗️ HashiCorp Certified: Terraform Associate! Earned this certification in Infrastructure as Code (IaC) principles.\n\nSkills demonstrated:\n- Terraform workflow understanding\n- Writing Terraform configurations\n- Managing state\n- Terraform Cloud/Enterprise\n- Module usage\n\nMastered the tools for provisioning and managing cloud infrastructure through code. This certification enhances my ability to implement consistent, version-controlled infrastructure deployments.\n\n#Terraform #IaC #DevOps #CloudAutomation",
+        "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "certified ethical hacker": {
+        "description": "🛡️ CEH: Certified Ethical Hacker! Completed this rigorous cybersecurity certification demonstrating penetration testing skills.\n\nAreas covered:\n- Footprinting and reconnaissance\n- Vulnerability analysis\n- System hacking\n- Social engineering\n- Cloud security\n\nGained hands-on experience with security tools and methodologies used to identify and fix vulnerabilities. This certification represents my commitment to cybersecurity best practices.\n\n#CEH #CyberSecurity #EthicalHacking #InfoSec",
+        "image": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "comptia security+": {
+        "description": "🔒 CompTIA Security+ Certified! Achieved this globally recognized cybersecurity certification.\n\nKey domains mastered:\n- Threats, attacks and vulnerabilities\n- Architecture and design\n- Implementation\n- Operations and incident response\n- Governance, risk and compliance\n\nThe comprehensive exam validated my knowledge of baseline security skills. This certification demonstrates my ability to assess security posture and implement appropriate solutions.\n\n#SecurityPlus #CyberSecurity #CompTIA #InfoSec",
+        "image": "https://images.unsplash.com/photo-1563986768609-322da13575f3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "cissp": {
+        "description": "🛡️ CISSP Certified! Proud to earn the prestigious Certified Information Systems Security Professional certification.\n\nDomains covered:\n- Security and risk management\n- Asset security\n- Security architecture\n- Communication security\n- Identity management\n\nThis advanced certification required demonstrating extensive knowledge across eight security domains. Represents my deep commitment to the cybersecurity profession and its best practices.\n\n#CISSP #CyberSecurity #InfoSec #SecurityProfessional",
+        "image": "https://images.unsplash.com/photo-1563986768609-322da13575f3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "fortinet nse": {
+        "description": "🛡️ Fortinet NSE Certified! Earned this network security certification focusing on Fortinet's security solutions.\n\nSkills validated:\n- Network security concepts\n- FortiGate firewall configuration\n- Threat prevention\n- Secure SD-WAN\n- Cloud security\n\nGained hands-on experience with enterprise-grade security appliances. This certification enhances my ability to design and implement comprehensive network security solutions.\n\n#NetworkSecurity #Fortinet #NSE #CyberSecurity",
+        "image": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "tensorflow developer": {
+        "description": "🤖 TensorFlow Developer Certified! Earned this practical certification in building ML models with TensorFlow.\n\nDemonstrated skills:\n- Building and training neural networks\n- Image classification\n- NLP techniques\n- Time series forecasting\n- Model deployment\n\nThe hands-on exam required implementing complete ML solutions. This certification validates my ability to solve real-world problems using TensorFlow and deep learning.\n\n#TensorFlow #MachineLearning #DeepLearning #AI",
+        "image": "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "ibm data science": {
+        "description": "📊 IBM Data Science Professional Certified! Completed this comprehensive program covering the full data science lifecycle.\n\nKey components:\n- Python for data science\n- Data analysis and visualization\n- Machine learning\n- Applied data science capstone\n\nBuilt multiple projects demonstrating end-to-end data science skills. This certification represents my ability to extract insights from complex datasets and build predictive models.\n\n#DataScience #IBM #MachineLearning #Python",
+        "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "deep learning specialization": {
+        "description": "🧠 Deep Learning Specialization Completed! Finished Andrew Ng's renowned Coursera program in deep learning.\n\nTopics mastered:\n- Neural networks and deep learning\n- Improving deep neural networks\n- Structuring ML projects\n- Convolutional networks\n- Sequence models\n\nThe programming assignments provided hands-on experience implementing cutting-edge deep learning techniques. This specialization has significantly enhanced my AI/ML capabilities.\n\n#DeepLearning #AI #MachineLearning #AndrewNg",
+        "image": "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "stanford machine learning": {
+        "description": "📈 Stanford Machine Learning Certified! Completed Andrew Ng's foundational machine learning course.\n\nKey algorithms learned:\n- Linear/logistic regression\n- Neural networks\n- Support vector machines\n- Clustering\n- Dimensionality reduction\n\nThe programming exercises in Octave/Matlab provided deep understanding of ML fundamentals. This course forms the bedrock of my machine learning knowledge and practical skills.\n\n#MachineLearning #Stanford #AndrewNg #AI",
+        "image": "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "ai for everyone": {
+        "description": "🤖 AI for Everyone Certified! Completed this non-technical AI course by Andrew Ng on Coursera.\n\nKey learnings:\n- AI terminology\n- Building AI projects\n- AI's impact on society\n- Working with AI teams\n- AI strategy\n\nGained valuable perspective on how AI can be applied across industries. This course helped me understand both the possibilities and limitations of artificial intelligence.\n\n#ArtificialIntelligence #AI #AndrewNg #FutureTech",
+        "image": "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "adobe certified": {
+        "description": "🎨 Adobe Certified Professional! Earned certification in [Photoshop/Illustrator] demonstrating expert-level skills.\n\nValidated abilities:\n- Advanced image manipulation\n- Professional design techniques\n- Workflow optimization\n- Industry best practices\n\nThis certification proves my proficiency with Adobe's creative tools and my ability to deliver professional-grade design work efficiently.\n\n#Adobe #GraphicDesign #DigitalArt #CreativeCertification",
+        "image": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "autocad professional": {
+        "description": "🏆 AutoCAD Certified Professional! Completed advanced certification in Autodesk's leading CAD software.\n\nSkills demonstrated:\n- Complex 2D drafting\n- 3D modeling and visualization\n- Customization and automation\n- Industry-specific workflows\n\nThis certification validates my ability to create precise technical drawings and models for engineering, architecture, and design projects.\n\n#AutoCAD #CAD #EngineeringDesign #Autodesk",
+        "image": "https://images.unsplash.com/photo-1581093450021-4a7360e9aab5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "solidworks certification": {
+        "description": "🛠️ SolidWorks Certification Achieved! Earned professional certification in 3D CAD design and engineering.\n\nAreas covered:\n- Part and assembly modeling\n- Drawing generation\n- Simulation and analysis\n- Product data management\n\nProved my ability to use SolidWorks for mechanical design and engineering applications. This certification enhances my technical design capabilities for manufacturing and product development.\n\n#SolidWorks #MechanicalEngineering #CAD #ProductDesign",
+        "image": "https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "figma ui/ux": {
+        "description": "🎨 Figma UI/UX Certified! Completed professional training in interface design using Figma.\n\nSkills validated:\n- Wireframing and prototyping\n- Design systems\n- Collaboration features\n- Interactive components\n- Developer handoff\n\nMastered this industry-standard tool for modern digital product design. The certification projects helped me develop a user-centered design approach for creating intuitive interfaces.\n\n#Figma #UXDesign #UI #ProductDesign",
+        "image": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "google project management": {
+        "description": "📊 Google Project Management Certified! Earned this professional certificate covering agile and traditional methodologies.\n\nKey learnings:\n- Project initiation\n- Planning and execution\n- Risk management\n- Stakeholder communication\n- Agile frameworks\n\nDeveloped comprehensive project documentation and plans during the program. This certification has equipped me with structured approaches to delivering projects successfully.\n\n#ProjectManagement #GoogleCertified #Agile #ProfessionalDevelopment",
+        "image": "https://images.unsplash.com/photo-1579389083078-4e7018379f7e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "certified scrum master": {
+        "description": "🔄 Certified Scrum Master (CSM)! Earned this agile certification from Scrum Alliance.\n\nMastered:\n- Scrum framework\n- Sprint planning\n- Backlog refinement\n- Team facilitation\n- Agile metrics\n\nThe interactive training provided practical experience with Scrum ceremonies and artifacts. This certification enhances my ability to guide teams in delivering value through agile practices.\n\n#Scrum #Agile #CSM #ProjectManagement",
+        "image": "https://images.unsplash.com/photo-1579389083078-4e7018379f7e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "pmp": {
+        "description": "📌 PMP Certified! Earned the prestigious Project Management Professional certification from PMI.\n\nDomains covered:\n- People (team leadership)\n- Process (technical project management)\n- Business environment\n\nPassed the rigorous exam demonstrating comprehensive project management knowledge. This globally recognized certification validates my ability to manage projects effectively across methodologies.\n\n#PMP #ProjectManagement #PMI #ProfessionalCertification",
+        "image": "https://images.unsplash.com/photo-1579389083078-4e7018379f7e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "google digital marketing": {
+        "description": "📢 Google Digital Marketing Certified! Completed this comprehensive program covering modern marketing techniques.\n\nAreas mastered:\n- Search and display advertising\n- Analytics and measurement\n- Social media marketing\n- E-commerce strategies\n- Content marketing\n\nGained hands-on experience with Google's marketing tools. This certification has enhanced my ability to develop and execute effective digital marketing campaigns.\n\n#DigitalMarketing #GoogleCertified #OnlineMarketing #GrowthMarketing",
+        "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "business analytics": {
+        "description": "📈 Business Analytics Certified! Completed advanced training in data-driven decision making from [Wharton/Harvard/UpGrad].\n\nSkills developed:\n- Data visualization\n- Predictive modeling\n- Statistical analysis\n- Business intelligence\n- Data storytelling\n\nThe case study approach provided real-world analytics experience. This certification enhances my ability to transform data into actionable business insights.\n\n#BusinessAnalytics #DataAnalysis #DecisionMaking #ProfessionalDevelopment",
+        "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    },
+    "default": {
+        "description": "📜 Certification Milestone! I'm pleased to announce that I've successfully completed my [certification name] certification!\n\nThis achievement represents [time/effort] of dedicated study and practical application in [field/subject]. Key takeaways include:\n\n- [Skill 1 gained]\n- [Skill 2 gained]\n- [Important concept mastered]\n\nEarning this certification has significantly enhanced my knowledge and capabilities in [field]. I'm grateful for the learning opportunity and excited to apply these skills in professional contexts!\n\n#ProfessionalCertification #ContinuousLearning #SkillDevelopment #CareerGrowth",
+        "image": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    }
+},
+
+    "internship": {
+        "tech_software": {
+            "google": {
+                "description": "🚀 Google Software Engineering Internship Complete! Thrilled to share I've completed my internship at Google, working on cutting-edge projects with brilliant engineers.\n\nDuring this [duration] internship, I:\n- Developed scalable software solutions\n- Worked with technologies like [List: TensorFlow, Kubernetes, etc.]\n- Participated in Google's famous code reviews\n- Contributed to real products used by millions\n\n#GoogleIntern #SoftwareEngineering #TechCareer",
+                "image": "https://images.unsplash.com/photo-1593005510329-8a4035a7238f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+            },
+            "microsoft": {
+                "description": "💡 Microsoft Explore Internship Achieved! Proud to complete this unique program designed for early-career technologists.\n\nHighlights:\n- Rotated between software engineering and program management\n- Built applications using Azure cloud services\n- Presented final project to Microsoft executives\n- Gained mentorship from industry leaders\n\n#MicrosoftIntern #ExploreProgram #TechDiversity",
+                "image": "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+            },
+            "amazon": {
+                "description": "📦 Amazon SDE Internship Complete! Delivered impactful solutions during my time at this e-commerce giant.\n\nKey experiences:\n- Worked on AWS services and distributed systems\n- Implemented features affecting millions of customers\n- Participated in Amazon's leadership principles workshops\n- Received full-time return offer!\n\n#AmazonIntern #SDE #AWS",
+                "image": "https://images.unsplash.com/photo-1600566752227-8f3b9a4f57c0?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+            }
+        },
+        "cloud_devops": {
+            "aws": {
+                "description": "☁️ AWS Cloud Internship Complete! Gained hands-on experience with the world's leading cloud platform.\n\nNotable achievements:\n- Earned AWS Solutions Architect certification\n- Deployed scalable infrastructure using EC2, S3, Lambda\n- Optimized cloud costs for enterprise clients\n- Contributed to migration projects\n\n#AWSIntern #CloudComputing #DevOps",
+                "image": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+            },
+            "azure": {
+                "description": "🔷 Azure DevOps Internship Accomplished! Spent [duration] mastering Microsoft's cloud ecosystem.\n\nKey learnings:\n- Implemented CI/CD pipelines\n- Automated infrastructure with ARM templates\n- Monitored solutions using Azure Monitor\n- Earned Microsoft Certified: Azure Fundamentals\n\n#AzureIntern #CloudEngineering #Microsoft",
+                "image": "https://images.unsplash.com/photo-1581092921461-39b2f2b8a450?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+            }
+        },
+        "ai_ml": {
+            "nvidia": {
+                "description": "🤖 NVIDIA AI Internship Complete! Worked at the intersection of hardware and artificial intelligence.\n\nExciting projects:\n- Optimized deep learning models for GPUs\n- Contributed to CUDA libraries\n- Published research paper on [topic]\n- Worked with Turing architecture GPUs\n\n#NVIDIA #AIResearch #DeepLearning",
+                "image": "https://images.unsplash.com/photo-1573164713988-8665fc963095?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+            },
+            "openai": {
+                "description": "🧠 OpenAI Research Internship Achieved! Spent [duration] advancing AI capabilities.\n\nNotable work:\n- Fine-tuned large language models\n- Contributed to reinforcement learning research\n- Co-authored paper submitted to NeurIPS\n- Gave internal tech talks on [topic]\n\n#OpenAI #MachineLearning #Research",
+                "image": "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+            }
+        },
+        "design": {
+            "autocad": {
+                "description": "🏗️ AutoCAD Internship at L&T Completed! Gained professional CAD experience in construction projects.\n\nKey contributions:\n- Created technical drawings for [project]\n- Developed 3D models of structural components\n- Collaborated with civil engineers\n- Reduced drafting time by 20% through automation\n\n#AutoCAD #EngineeringDesign #ConstructionTech",
+                "image": "https://images.unsplash.com/photo-1605106702734-205df224ecce?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+            },
+            "figma": {
+                "description": "🎨 Figma Design Internship Complete! Shaped digital experiences at [Company].\n\nPortfolio pieces:\n- Designed end-to-end user flows\n- Created design systems and component libraries\n- Conducted usability testing sessions\n- Collaborated with PMs and engineers\n\n#UIDesign #UX #Figma",
+                "image": "https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+            }
+        },
+        "business": {
+            "goldman": {
+                "description": "💼 Goldman Sachs Summer Analyst Program Complete! Immersive experience in investment banking.\n\nKey achievements:\n- Built financial models for M&A deals\n- Prepared pitch books for client meetings\n- Analyzed market trends in [sector]\n- Networked with managing directors\n\n#GoldmanSachs #InvestmentBanking #Finance",
+                "image": "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+            },
+            "deloitte": {
+                "description": "📊 Deloitte Consulting Internship Achieved! Solved complex business problems for Fortune 500 clients.\n\nProject highlights:\n- Conducted market analysis for [industry]\n- Developed digital transformation roadmap\n- Presented findings to C-suite executives\n- Earned return offer for full-time role\n\n#Deloitte #Consulting #BusinessStrategy",
+                "image": "https://images.unsplash.com/photo-1521791055366-0d553872125f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+            }
+        },
+        "default": {
+            "description": "🌟 Internship Achievement! I'm proud to share that I've successfully completed my [field] internship at [Company].\n\nThis [duration] experience provided:\n- Hands-on industry experience\n- Professional mentorship\n- Academic knowledge application\n- Valuable industry connections\n\n#InternshipComplete #ProfessionalGrowth",
+            "image": "https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+        }
+    
+},
+
+    "hackathon": {
+        "global": {
+            "hackmit": {
+                "description": "🌐 HackMIT Experience! Competed in one of the world's premier student hackathons with 1,000+ global participants.\n\nOur project [Project Name] addressed [problem] using:\n- [Tech Stack: e.g., React, TensorFlow]\n- [Innovation: e.g., novel algorithm for X]\n\nAchievements:\n- Top 10 finalist among 300+ teams\n- Special mention for [category]\n- Connections with MIT researchers\n\n#HackMIT #STEM #StudentInnovation",
+                "image": "https://images.unsplash.com/photo-1523961131990-5ea7c61b2107?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+            },
+            "nasachallenge": {
+                "description": "🚀 NASA Space Apps Challenge! 48 hours hacking solutions for space exploration challenges.\n\nOur team developed [Project] to:\n- [Solution for climate tracking/satellite optimization/etc.]\n- Featured NASA datasets like [Dataset Name]\n\nWon [Award Name] for:\n- Best use of Earth observation data\n- Most scalable space tech solution\n\n#NASASpaceApps #SpaceTech #OpenScience",
+                "image": "https://images.unsplash.com/photo-1454789548928-9efd52dc4031?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+            },
+            "googlehashcode": {
+                "description": "🧠 Google HashCode Achievements! Tackled complex engineering problems with algorithmic solutions.\n\nTeam [Name] ranked [X] worldwide:\n- Optimized [system] with [tech]\n- Achieved [performance metric] efficiency\n\nKey learnings:\n- Distributed systems optimization\n- Google's problem-solving methodology\n\n#HashCode #GoogleHackathon #Algorithms",
+                "image": "https://images.unsplash.com/photo-1607252650355-f7fd0460ccdb?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+            }
+        },
+        "industry": {
+            "jpcodeforgood": {
+                "description": "💳 JP Morgan Code for Good! 24 hours coding for social impact with financial tech.\n\nDeveloped [Solution] for NGO [Name]:\n- Automated [process] saving 100+ hours/month\n- Integrated JPMorgan APIs for [feature]\n\nOutcome:\n- Selected for JPMorgan summer internship\n- Implementation commitment from [NGO]\n\n#CodeForGood #FinTech #SocialImpact",
+                "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+            },
+            "flipkartgrid": {
+                "description": "📦 Flipkart Grid 4.0! Built e-commerce innovations for India's largest online marketplace.\n\nOur solution [Name] featured:\n- AI-powered [feature] for supply chain\n- [X]% improvement in [metric]\n\nRecognition:\n- Top 5 in [Track Name]\n- Interview opportunity with Flipkart\n\n#FlipkartGrid #EcommerceTech #SupplyChain",
+                "image": "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+            }
+        },
+        "student": {
+            "hacknitr": {
+                "description": "🎓 HackNITR 3.0 Experience! 36-hour hackathon at NIT Rourkela with 500+ participants.\n\nBuilt [Project] using:\n- [Tech: e.g., Blockchain for X]\n- [Special hardware if used]\n\nAchievements:\n- Won [Track Name] track\n- Special prize from [Sponsor]\n- Campus ambassador offer\n\n#HackNITR #StudentHackers #BuildWithFirebase",
+                "image": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+            },
+            "hackcbs": {
+                "description": "📚 HackCBS 5.0! Delhi University's flagship hackathon with 100+ teams competing.\n\nOur project [Name] solved [edu/health/etc.] challenges:\n- Featured [Innovative Feature]\n- Integrated [APIs/SDKs]\n\nOutcomes:\n- Selected for [Incubator] mentorship\n- Coverage in [Media Name]\n\n#HackCBS #DUHackathon #StudentTech",
+                "image": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+            }
+        },
+        "default": {
+            "description": "💻 [Hackathon Name] Experience! Pushed our limits in [duration] of intense coding and innovation.\n\nHighlights:\n- Built [Project Brief]\n- Overcame [Key Challenge]\n- Learned [New Skill/Tech]\n\nGrateful to teammates [@1, @2] and organizers!\n#HackathonLife #CodeToCreate #TechCommunity",
+            "image": "https://images.unsplash.com/photo-1517430816045-df4b7de11d1d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+        }
+    
+},
+
+    "achievement": {
+        "academic": {
+            "valedictorian": {
+                "description": "🎓 Valedictorian Achievement! Honored to graduate as the top-ranked student in my [University/Class of Year] batch.\n\nThis recognition represents:\n- 4 years of consistent academic excellence\n- Leadership in [Number] student organizations\n- Research work on [Topic]\n- Mentorship of [Number] peers\n\nGrateful to my professors, family, and friends for their support!\n#Valedictorian #AcademicExcellence #TopOfTheClass",
+                "image": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+            },
+            "published_paper": {
+                "description": "📚 Research Published! My paper '[Title]' has been accepted in [Journal/Conference Name] (Impact Factor: X.X)!\n\nKey contributions:\n- Novel approach to [Problem]\n- [X]% improvement over existing methods\n- Potential applications in [Field]\n\nThis represents [Months] of rigorous research under Dr. [Name]'s guidance.\n#Research #AcademicPublishing #ScienceCommunication",
+                "image": "https://images.unsplash.com/photo-1507668077129-56e32842fceb?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+            }
+        },
+        "professional": {
+            "promotion": {
+                "description": "📈 Career Milestone! Thrilled to share my promotion to [New Role] at [Company]!\n\nJourney highlights:\n- Led [Project] generating $[X] revenue\n- Mentored [Number] team members\n- Developed [Skill/Expertise]\n\nGrateful for my team's trust and excited for new challenges ahead!\n#Promotion #CareerGrowth #Leadership",
+                "image": "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+            },
+            "forbes_feature": {
+                "description": "🌟 Forbes Feature! Honored to be recognized in Forbes [30 Under 30/Next 1000] for my work in [Field].\n\nKey achievements noted:\n- [Innovation/Project]\n- Impact on [Industry/Community]\n- Vision for [Future Goal]\n\nThis recognition fuels my commitment to [Mission].\n#Forbes #IndustryLeader #AchievementUnlocked",
+                "image": "https://images.unsplash.com/photo-1563986768609-322da13575f3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+            }
+        },
+        "tech": {
+            "open_source": {
+                "description": "💻 Open Source Impact! My contributions to [Project] have been merged into production, used by [X] developers worldwide!\n\nNotable work:\n- Implemented [Feature]\n- Fixed [Number] critical bugs\n- Authored [Number] documentation improvements\n\nThe maintainers awarded me [Badge/Rank] for consistent contributions.\n#OpenSource #GitHub #DeveloperCommunity",
+                "image": "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+            },
+            "hackathon_winner": {
+                "description": "🏆 Hackathon Champions! Our team [Name] won 1st place at [Event] among [Number] teams!\n\nProject [Name]:\n- Solves [Problem] using [Tech Stack]\n- Features [Innovation]\n- Potential impact on [Industry/Group]\n\nPrize includes [Funding/Mentorship/Opportunity].\n#HackathonWinner #TechInnovation #BuildInPublic",
+                "image": "https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+            }
+        },
+        "personal": {
+            "marathon": {
+                "description": "🏃 Marathon Accomplished! Completed my first full marathon in [Time] at [Event]!\n\nTraining journey:\n- [X] months of preparation\n- [Y] km weekly mileage\n- Overcame [Injury/Challenge]\n\nSpecial thanks to my running buddies and supporters!\n#Marathon #FitnessGoals #NeverGiveUp",
+                "image": "https://images.unsplash.com/photo-1530137073520-4d3d4b053dd5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+            },
+            "tedx_speaker": {
+                "description": "🎤 TEDx Speaker Achievement! Shared my ideas about [Topic] at TEDx[EventName] to an audience of [Number].\n\nKey messages:\n- [Insight 1]\n- [Insight 2]\n- Call to action for [Change]\n\nThe talk is now live with [X] views - link in comments!\n#TEDxSpeaker #PublicSpeaking #IdeasWorthSpreading",
+                "image": "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+            }
+        },
+        "default": {
+            "description": "🏆 Achievement Unlocked! I'm proud to have [describe achievement] after [time/effort].\n\nThis represents:\n- [Key effort 1]\n- [Key effort 2]\n- [Overcome challenge]\n\nGrateful to [supporters] and excited for next goals!\n#Achievement #GrowthMindset #Success",
+            "image": "https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+        }
+    }
+
+        };
+
+        // DOM elements
+        const chatMessages = document.getElementById('chat-messages');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+        const resultContainer = document.getElementById('result-container');
+        const generatedImage = document.getElementById('generated-image');
+        const generatedDescription = document.getElementById('generated-description');
+        const copyBtn = document.getElementById('copy-btn');
+
+       
+
+        const keywordMap = {
+    "project": [
+        "ecommerce",
+        "ai chatbot assistant",
+        "resume builder web app",
+        "text-to-image generator",
+        "edtech lms platform",
+        "smart expense tracker",
+        "online voting system",
+        "portfolio website with blog",
+        "real-time chat application",
+        "online code editor",
+        "voice-controlled smart home ui",
+        "fitness tracker app",
+        "job posting portal",
+        "weather forecast dashboard",
+        "crypto price tracker",
+        "recipe recommendation system",
+        "ai notes summarizer",
+        "facial recognition login",
+        "virtual whiteboard",
+        "crowdfunding platform",
+        "iot smart irrigation",
+        "default"
+    ],
+    "certification": [
+        "flutter",
+        "python for everybody",
+        "javascript algorithms",
+        "responsive web design",
+        "full stack web development",
+        "android developer",
+        "ios development swift",
+        "aws cloud practitioner",
+        "azure fundamentals",
+        "google cloud engineer",
+        "docker certified",
+        "kubernetes administrator",
+        "terraform associate",
+        "certified ethical hacker",
+        "comptia security+",
+        "cissp",
+        "fortinet nse",
+        "tensorflow developer",
+        "ibm data science",
+        "deep learning specialization",
+        "stanford machine learning",
+        "ai for everyone",
+        "adobe certified",
+        "autocad professional",
+        "solidworks certification",
+        "figma ui/ux",
+        "google project management",
+        "certified scrum master",
+        "pmp",
+        "google digital marketing",
+        "business analytics",
+        "default"
+    ],
+    "internship": [
+        "google",
+        "microsoft",
+        "amazon",
+        "aws",
+        "azure",
+        "nvidia",
+        "openai",
+        "autocad",
+        "figma",
+        "goldman",
+        "deloitte",
+        "default"
+    ],
+    "hackathon": [
+        "hackmit",
+        "nasachallenge",
+        "googlehashcode",
+        "jpcodeforgood",
+        "flipkartgrid",
+        "hacknitr",
+        "hackcbs",
+        "default"
+    ],
+    "achievement": [
+        "valedictorian",
+        "published_paper",
+        "promotion",
+        "forbes_feature",
+        "open_source",
+        "hackathon_winner",
+        "marathon",
+        "tedx_speaker",
+        "default"
+    ]
+};
+function addMessage(message, isUser = false) {
+    const msgDiv = document.createElement('div');
+    msgDiv.className = isUser ? 'user-message' : 'bot-message';
+    msgDiv.textContent = message;
+    chatMessages.appendChild(msgDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+        // Improved Input Processor
+        function processInput() {
+            const input = userInput.value.trim().toLowerCase();
+            if (!input) return;
+
+            addMessage(input, true);
+            userInput.value = '';
+
+            let category = '';
+            let specific = '';
+            const words = input.split(/\s+/);
+
+            // Detect category first
+            const categories = Object.keys(keywordMap);
+            for (const cat of categories) {
+                if (input.includes(cat) || words.some(word => cat.startsWith(word))) {
+                    category = cat;
+                    break;
+                }
+            }
+
+           
+
+            // If no category found, try to infer
+            if (!category) {
+                if (words.some(w => ['cert', 'certificate'].includes(w))) category = 'certification';
+                else if (words.includes('intern')) category = 'internship';
+                else if (words.includes('hack')) category = 'hackathon';
+                else if (words.some(w => ['achieve', 'accomplish'].includes(w))) category = 'achievement';
+                else if (words.includes('project')) category = 'project';
+            }
+
+            if (category) {
+                // Find specific entry
+                const entries = keywordMap[category];
+                for (const entry of entries) {
+                    const entryKeywords = entry.toLowerCase().split(/[\s-]+/);
+                    if (entryKeywords.every(kw => input.includes(kw))) {
+                        specific = entry;
+                        break;
+                    }
+                }
+
+                // Handle special cases
+               // Inside processInput() after setting 'specific'
+// Enhanced Internship Handling
+if (category === 'internship') {
+    // Tech/Software
+    if (['google', 'microsoft', 'amazon', 'meta', 'apple', 'netflix', 'tesla'].includes(specific)) {
+        specific = `tech_software.${specific}`;
+    }
+    // Cloud/DevOps
+    else if (['aws', 'azure', 'gcp', 'digitalocean', 'ibm cloud'].includes(specific)) {
+        specific = `cloud_devops.${specific}`;
+    }
+    // AI/ML
+    else if (['nvidia', 'openai', 'deepmind', 'huggingface', 'databricks'].includes(specific)) {
+        specific = `ai_ml.${specific}`;
+    }
+    // Design
+    else if (['autocad', 'figma', 'adobe', 'sketch', 'canva'].includes(specific)) {
+        specific = `design.${specific}`;
+    }
+    // Business/Finance
+    else if (['goldman', 'deloitte', 'mckinsey', 'jpmorgan', 'kpmg'].includes(specific)) {
+        specific = `business.${specific}`;
+    }
+    // Hardware/IoT
+    else if (['intel', 'arduino', 'raspberrypi', 'siemens'].includes(specific)) {
+        specific = `hardware.${specific}`;
+    }
+}
+
+// Enhanced Hackathon Handling
+if (category === 'hackathon') {
+    // Global
+    if (['hackmit', 'nasachallenge', 'googlehashcode', 'techcrunch', 'mlh', 'ethglobal'].includes(specific)) {
+        specific = `global.${specific}`;
+    }
+    // Industry
+    else if (['jpcodeforgood', 'flipkartgrid', 'microsoftimagine', 'ibmhack', 'visahack'].includes(specific)) {
+        specific = `industry.${specific}`;
+    }
+    // Student
+    else if (['hacknitr', 'hackcbs', 'hackthesix', 'pennapps', 'tamuhack'].includes(specific)) {
+        specific = `student.${specific}`;
+    }
+    // Specialized
+    else if (['healthhack', 'blockchainhack', 'climatehack', 'fintechhack'].includes(specific)) {
+        specific = `specialized.${specific}`;
+    }
+}
+
+// Enhanced Certification Handling
+if (category === 'certification') {
+    // Cloud
+    if (['aws solutions architect', 'azure architect', 'gcp professional'].includes(specific)) {
+        specific = specific.replace(' ', '_');
+    }
+    // Security
+    else if (['ceh', 'cissp', 'ccsp', 'oscp'].includes(specific)) {
+        specific = `security.${specific}`;
+    }
+    // Data Science
+    else if (['data camp', 'coursera data', 'edx analytics'].includes(specific)) {
+        specific = `data_science.${specific}`;
+    }
+    // Developer
+    else if (['android', 'ios', 'react', 'nodejs'].includes(specific)) {
+        specific = `${specific}_certified`;
+    }
+}
+
+                const response = specific ? 
+                    (responses[category][specific] || responses[category]['default']) : 
+                    responses[category]['default'];
+
+                generatedDescription.textContent = response.description;
+                generatedImage.src = response.image;
+                resultContainer.style.display = 'block';
+                addMessage("Here's a tailored LinkedIn post for you. Check the result section below!", false);
+            } else {
+                addMessage("I can create LinkedIn posts for projects, certifications, internships, hackathons, or achievements. Could you specify what you'd like to share?", false);
+            }
+        }
+// Add to your existing JavaScript:
+
+// Get the download button
+const downloadBtn = document.getElementById('download-btn');
+
+// Download image function
+async function downloadImage() {
+    const imageUrl = generatedImage.src;
+    const fileName = 'linkedin-post-image.jpg'; // Default filename
+    
+    try {
+        const response = await fetch(imageUrl);
+        const blob = await response.blob();
+        const downloadLink = document.createElement('a');
+        
+        downloadLink.href = URL.createObjectURL(blob);
+        downloadLink.download = fileName;
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    } catch (error) {
+        console.error('Error downloading image:', error);
+        addMessage("Couldn't download the image. Please try again.", false);
+    }
+}
+
+// Add event listener for download button
+downloadBtn.addEventListener('click', downloadImage);
+
+
+        // Event listeners
+        sendBtn.addEventListener('click', processInput);
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') processInput();
+        });
+
+        copyBtn.addEventListener('click', () => {
+            const range = document.createRange();
+            range.selectNode(generatedDescription);
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+            document.execCommand('copy');
+            window.getSelection().removeAllRanges();
+            
+            copyBtn.textContent = 'Copied!';
+            setTimeout(() => {
+                copyBtn.textContent = 'Copy Description';
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
